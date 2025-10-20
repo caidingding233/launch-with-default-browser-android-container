@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">鸿蒙浏览器转发器</string>
+    <!-- 海泰浏览器包名配置 -->
+    <string name="haitai_browser_package">com.haitai.browser</string>
+    <!-- 备选浏览器包名列表（逗号分隔） -->
+    <string name="fallback_browser_packages">com.android.chrome,org.mozilla.firefox,com.UCMobile</string>
+</resources>
