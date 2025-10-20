@@ -1,6 +1,6 @@
 # 鸿蒙浏览器转发器
 
-这是一个Android应用，用于在鸿蒙系统的安卓容器（如出境易、卓易通）中拦截浏览器Intent并转发到系统默认浏览器（如海泰浏览器）。
+这是一个Android应用，用于在鸿蒙系统的安卓容器（如出境易、卓易通）中拦截浏览器Intent并转发到系统设定的**默认浏览器（如海泰浏览器）。
 
 ## 功能特性
 
@@ -20,21 +20,37 @@
 
 ## 使用方法
 
-### 安装步骤
+### 方式一：下载预构建的APK（推荐）
 
-1. 构建APK：
+1. 前往 [Releases](../../releases) 页面
+2. 下载最新版本的 `app-debug.apk`
+3. 安装到设备：
+```bash
+adb install app-debug.apk
+```
+
+### 方式二：自己构建
+
+1. 克隆仓库：
+```bash
+git clone <仓库地址>
+cd launch-with-default-browser-android-container
+```
+
+2. 构建APK：
 ```bash
 ./gradlew assembleDebug
 ```
 
-2. 安装到设备：
+3. 安装到设备：
 ```bash
 adb install app/build/outputs/apk/debug/app-debug.apk
 ```
 
-3. 在安卓容器系统设置中，将此应用设置为**默认浏览器**
+### 配置步骤
 
-4. 在鸿蒙系统中，将海泰浏览器设置为默认浏览器
+1. 在安卓容器系统设置中，将此应用设置为**默认浏览器**
+2. 在鸿蒙系统中，将海泰浏览器设置为默认浏览器
 
 ### 使用效果
 
@@ -67,6 +83,20 @@ adb logcat | grep BrowserForwarder
 - ⚠️ 必须在安卓容器系统设置中将此应用设置为默认浏览器
 - ⚠️ 在鸿蒙系统中设置海泰浏览器为默认浏览器
 - ⚠️ 此应用本身不是浏览器，只是一个转发器
+
+## 自动构建
+
+本项目配置了GitHub Actions自动构建：
+
+- **推送到main分支**：自动构建并创建Release，包含Debug和Release版本的APK
+- **创建Tag**：推送版本标签（如`v1.0.0`）时会创建正式版本Release
+
+### 创建正式版本
+
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
 
 ## 许可证
 

@@ -1,0 +1,71 @@
+name: 发布版本
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    name: 发布正式版本
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置 JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: 赋予 Gradle 执行权限
+        run: chmod +x gradlew
+
+      - name: 构建 Release APK
+        run: ./gradlew assembleRelease --stacktrace
+
+      - name: 构建 Debug APK
+        run: ./gradlew assembleDebug --stacktrace
+
+      - name: 获取版本号
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+      - name: 创建 Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Release ${{ steps.get_version.outputs.VERSION }}
+          body: |
+            ## 🚀 鸿蒙浏览器转发器 ${{ steps.get_version.outputs.VERSION }}
+            
+            ### 功能特性
+            - ✅ 拦截所有http/https的浏览器Intent
+            - ✅ 自动转发到系统默认浏览器
+            - ✅ 可设置为默认浏览器选项
+            - ✅ 完整保留原始Intent信息
+            
+            ### 下载说明
+            - `app-debug.apk` - Debug版本，适合开发测试
+            - `app-release-unsigned.apk` - Release版本（未签名）
+            
+            ### 安装方法
+            ```bash
+            adb install app-debug.apk
+            ```
+            
+            ### 使用说明
+            1. 在安卓容器中设置此应用为默认浏览器
+            2. 点击任何链接
+            3. 选择你喜欢的浏览器并勾选"始终"
+            4. 以后就会自动跳转
+          files: |
+            app/build/outputs/apk/debug/app-debug.apk
+            app/build/outputs/apk/release/app-release-unsigned.apk
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
