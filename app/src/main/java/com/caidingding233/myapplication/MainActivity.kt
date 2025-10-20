@@ -7,13 +7,25 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.caidingding233.myapplication.ui.theme.MyApplicationTheme
 
 class MainActivity : ComponentActivity() {
@@ -35,8 +47,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             MyApplicationTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "浏览器转发器",
+                    AppControlScreen(
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
@@ -124,17 +135,63 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
+fun AppControlScreen(modifier: Modifier = Modifier) {
+    var isIconVisible by remember { 
+        mutableStateOf(AppVisibilityHelper.isAppIconVisible(androidx.compose.ui.platform.LocalContext.current))
+    }
+    val context = androidx.compose.ui.platform.LocalContext.current
+    
+    Column(
         modifier = modifier
-    )
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = "应用可见性控制",
+            style = MaterialTheme.typography.headlineMedium,
+            textAlign = TextAlign.Center
+        )
+        
+        Text(
+            text = "这是一个浏览器转发器应用",
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.padding(top = 8.dp, bottom = 32.dp),
+            textAlign = TextAlign.Center
+        )
+        
+        Text(
+            text = if (isIconVisible) "应用图标当前可见" else "应用图标已隐藏",
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+        
+        Switch(
+            checked = isIconVisible,
+            onCheckedChange = { checked ->
+                if (checked) {
+                    AppVisibilityHelper.showAppIcon(context)
+                } else {
+                    AppVisibilityHelper.hideAppIcon(context)
+                }
+                isIconVisible = checked
+            }
+        )
+        
+        Text(
+            text = "提示：关闭开关后，应用图标将从启动器中消失。\n你仍然可以通过设置 → 应用管理 → 本应用 → 打开 来启动应用。",
+            style = MaterialTheme.typography.bodySmall,
+            modifier = Modifier.padding(top = 32.dp),
+            textAlign = TextAlign.Center
+        )
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
+fun AppControlScreenPreview() {
     MyApplicationTheme {
-        Greeting("Android")
+        AppControlScreen()
     }
 }
